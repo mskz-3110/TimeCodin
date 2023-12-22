@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -65,6 +66,11 @@ namespace TimeCodin {
 
     [Test]
     public void LtcTest(){
+      Assert.That(Marshal.SizeOf<TimeCode>() == 4);
+      for (var i = 0; i < 256; ++i){
+        Assert.That(TimeCode.GetByteString((byte)i) == $"{i:00}");
+      }
+
       var waveDataReader = new WaveDataReader();
       foreach (var ltcFilePath in LtcFilePaths){
         waveDataReader.ReadEach(ltcFilePath, (reader, cts, size) => {

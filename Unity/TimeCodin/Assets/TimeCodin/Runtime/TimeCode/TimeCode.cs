@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace TimeCodin {
   [StructLayout(LayoutKind.Explicit, Pack = 1)]
@@ -6,6 +7,17 @@ namespace TimeCodin {
     public const int MinValue = 0x00000000;
 
     public const int MaxValue = 0x18000000;
+
+    static private string[] ByteStrings = new string[256];
+    static public string GetByteString(byte index) => ByteStrings[index];
+
+    static private StringBuilder StringBuilder = new StringBuilder();
+
+    static TimeCode(){
+      for (int i = 0; i < ByteStrings.Length; ++i){
+        ByteStrings[i] = $"{i:00}";
+      }
+    }
 
     static public float ToFloat(byte hour, byte min, byte sec, byte frame = 0, byte framePerSec = 0){
       return (hour * 3600 + min * 60 + sec) + ((framePerSec == 0) ? 0 : (float)frame / framePerSec);
@@ -33,7 +45,17 @@ namespace TimeCodin {
     }
 
     public override string ToString(){
-      return $"{Hour:00}:{Min:00}:{Sec:00}:{Frame:00}";
+      lock (StringBuilder){
+        StringBuilder.Clear();
+        StringBuilder.Append(GetByteString(Hour));
+        StringBuilder.Append(":");
+        StringBuilder.Append(GetByteString(Min));
+        StringBuilder.Append(":");
+        StringBuilder.Append(GetByteString(Sec));
+        StringBuilder.Append(":");
+        StringBuilder.Append(GetByteString(Frame));
+        return StringBuilder.ToString();
+      }
     }
   }
 }
